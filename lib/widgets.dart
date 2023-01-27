@@ -2,6 +2,8 @@
 // All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 
@@ -59,8 +61,15 @@ class ScanResultTile extends StatelessWidget {
   }
 
   String getNiceHexArray(List<int> bytes) {
-    return '[${bytes.map((i) => i.toRadixString(16).padLeft(2, '0')).join(', ')}]'
-        .toUpperCase();
+    var hexString =
+        bytes.map((i) => i.toRadixString(16).padLeft(2, '0')).join();
+    return List.generate(
+      hexString.length ~/ 2,
+      (i) => String.fromCharCode(
+          int.parse(hexString.substring(i * 2, (i * 2) + 2), radix: 16)),
+    ).join();
+    // return '[${bytes.map((i) => i.toRadixString(16).padLeft(2, '0')).join(', ')}]'
+    //     .toUpperCase();
   }
 
   String getNiceManufacturerData(Map<int, List<int>> data) {
@@ -182,13 +191,15 @@ class CharacteristicTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 const Text('Characteristic'),
-                Text(
-                    '0x${characteristic.uuid.toString().toUpperCase().substring(4, 8)}',
+                Text('0x${characteristic.uuid.toString().substring(4, 8)}',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: Theme.of(context).textTheme.bodySmall?.color))
               ],
             ),
-            subtitle: Text(value.toString()),
+            // subtitle: Text(value.toString()),
+            subtitle: Text(getNiceHexArray(value!)),
+            // subtitle: Text(timeStampBinary(value!)),
+            // subtitle: Text(binaryToAscii(value!)),
             contentPadding: const EdgeInsets.all(0.0),
           ),
           trailing: Row(
@@ -220,6 +231,31 @@ class CharacteristicTile extends StatelessWidget {
         );
       },
     );
+  }
+
+// change the hex array to a string
+  String getNiceHexArray(List<int> bytes) {
+    var hexString =
+        bytes.map((i) => i.toRadixString(16).padLeft(2, '0')).join();
+    return List.generate(
+      hexString.length ~/ 2,
+      (i) => String.fromCharCode(
+          int.parse(hexString.substring(i * 2, (i * 2) + 2), radix: 16)),
+    ).join();
+  }
+
+// change timestamp unix to ascci string
+  String timeStampBinary(List<int> bytes) {
+    int unixTimestamp = bytes.reduce((current, previous) => current + previous);
+    DateTime dateTime =
+        DateTime.fromMillisecondsSinceEpoch(unixTimestamp * 1000);
+    String asciiString = dateTime.toIso8601String();
+    return asciiString;
+  }
+
+  //binary to ascii
+  String binaryToAscii(List<int> bytes) {
+    return String.fromCharCodes(bytes);
   }
 }
 
