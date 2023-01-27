@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.blue_test">
-   <application
+    <application
         android:label="blue_test"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
@@ -30,8 +30,17 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
-        <uses-permission android:name="android.permission.BLUETOOTH" />  
-	    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />  
-	    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>  
+
     </application>
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <!--Before Android 12 (but still needed location, even if not requested)-->
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-feature android:name="android.hardware.bluetooth" android:required="false"/>
+    <uses-feature android:name="android.hardware.bluetooth_le" android:required="false"/>
+
 </manifest>

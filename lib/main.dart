@@ -7,14 +7,28 @@ import 'dart:math';
 
 import 'package:blue_test/widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_blue/flutter_blue.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 void main() {
   runApp(const FlutterBlueApp());
+  Future<bool> checkAndRequestBluetoothPermission() async {
+    var status = await Permission.bluetooth.status;
+    print("TESSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSST");
+    print(status);
+    if (status.isGranted == false) {
+      var requestStatus = await Permission.bluetooth.request();
+    }
+    return status.isGranted;
+  }
+  checkAndRequestBluetoothPermission();
 }
 
 class FlutterBlueApp extends StatelessWidget {
   const FlutterBlueApp({super.key});
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -88,26 +102,26 @@ class FindDevicesScreen extends StatelessWidget {
                 builder: (c, snapshot) => Column(
                   children: snapshot.data!
                       .map((d) => ListTile(
-                            title: Text(d.name),
-                            subtitle: Text(d.id.toString()),
-                            trailing: StreamBuilder<BluetoothDeviceState>(
-                              stream: d.state,
-                              initialData: BluetoothDeviceState.disconnected,
-                              builder: (c, snapshot) {
-                                if (snapshot.data ==
-                                    BluetoothDeviceState.connected) {
-                                  return ElevatedButton(
-                                    child: const Text('OPEN'),
-                                    onPressed: () => Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                DeviceScreen(device: d))),
-                                  );
-                                }
-                                return Text(snapshot.data.toString());
-                              },
-                            ),
-                          ))
+                    title: Text(d.name),
+                    subtitle: Text(d.id.toString()),
+                    trailing: StreamBuilder<BluetoothDeviceState>(
+                      stream: d.state,
+                      initialData: BluetoothDeviceState.disconnected,
+                      builder: (c, snapshot) {
+                        if (snapshot.data ==
+                            BluetoothDeviceState.connected) {
+                          return ElevatedButton(
+                            child: const Text('OPEN'),
+                            onPressed: () => Navigator.of(context).push(
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        DeviceScreen(device: d))),
+                          );
+                        }
+                        return Text(snapshot.data.toString());
+                      },
+                    ),
+                  ))
                       .toList(),
                 ),
               ),
