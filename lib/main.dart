@@ -15,14 +15,16 @@ void main() {
   runApp(const FlutterBlueApp());
   Future<bool> checkAndRequestBluetoothPermission() async {
     var status = await Permission.bluetooth.status;
-    print("TESSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSST");
+    await Permission.bluetooth.request();
     print(status);
+    await Permission.location.request();
     if (status.isGranted == false) {
       var requestStatus = await Permission.bluetooth.request();
     }
     return status.isGranted;
   }
   checkAndRequestBluetoothPermission();
+  FlutterBlue.instance.startScan(timeout: Duration(seconds: 4), scanMode: ScanMode.lowLatency, allowDuplicates: true);
 }
 
 class FlutterBlueApp extends StatelessWidget {
@@ -100,7 +102,7 @@ class FindDevicesScreen extends StatelessWidget {
                     .asyncMap((_) => FlutterBlue.instance.connectedDevices),
                 initialData: const [],
                 builder: (c, snapshot) => Column(
-                  children: snapshot.data!
+                  children: (snapshot.data != null ? snapshot.data : [])!
                       .map((d) => ListTile(
                     title: Text(d.name),
                     subtitle: Text(d.id.toString()),
